@@ -15,164 +15,164 @@ public:
 
 
     stringParse(string *html){
-        this->html = html;
+    this->html = html;
     }
 
 
 
-    // РёС‰РµС‚ РїРµСЂРІСѓСЋ СЃС‚СЂРѕРєСѓ РІРѕ РѕСЃРЅРѕРІРЅРѕР№ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РІРµРєС‚РѕСЂ long long int, РІ РєРѕС‚РѕСЂРѕРј Р·Р°РїРёСЃР°РЅС‹
-    // РїРѕР·РёС†РёРё РІС…РѕР¶РґРµРЅРёСЏ РїРµСЂРІРѕР№ СЃС‚СЂРѕРєРё РІРѕ РІС‚РѕСЂСѓСЋ, РєСЂ4 Р°Р»РіРѕСЂРёС‚Рј РљРњРџ
+    // ищет первую строку во основной и возвращает вектор long long int, в котором записаны
+    // позиции вхождения первой строки во вторую, кр4 алгоритм КМП
     vector <long long int> doKmp(string a)
     {
-// СЃР»РёРІР°РµРј РґРІРµ СЃС‚СЂРѕРєРё РґР»СЏ Р°Р»РіРѕСЂРёС‚РјР° РєРјРї
-        string s = a + "@" + *html;
+// сливаем две строки для алгоритма кмп
+string s = a + "@" + *html;
 
-        long long int *m, l = s.length(), p = a.length();
-        vector <long long int> srtPositions;
-        m = new long long int [l];
-        for(long long int i=0; i<=p; i++) m[i]=0;
+long long int *m, l = s.length(), p = a.length();
+ vector <long long int> srtPositions;
+m = new long long int [l];
+for(long long int i=0; i<=p; i++) m[i]=0;
 
-        for(long long int i = p+1; i < l ; i++){
-            long long int j = m[i-1];
-            while(j>0 && s[i]!=s[j]) j  = m[j];
-            if(s[i]==s[j]) j++;
-            m[i]=j;
-            if(j==p) srtPositions.push_back(i-2*p);
-
-
-        }
-        delete m;
-        return srtPositions;
-    }
+for(long long int i = p+1; i < l ; i++){
+long long int j = m[i-1];
+while(j>0 && s[i]!=s[j]) j  = m[j];
+if(s[i]==s[j]) j++;
+m[i]=j;
+if(j==p) srtPositions.push_back(i-2*p);
 
 
+}
+delete m;
+return srtPositions;
+}
 
 
-// search for tags with specified attribute - РІРѕР·РІСЂР°С‰Р°РµС‚ РјР°СЃСЃРёРІ РЅР°С‡Р°Р»СЊРЅС‹С…
-// Рё РєРѕРЅРµС‡РЅС‹С… РїРѕР·РёС†РёР№ С‚СЌРіРѕРІ, РїРѕРґС…РѕРґСЏС‰РёС… СѓСЃР»РѕРІРёСЋ
-//( РєРѕРЅРµС‡РЅР°СЏ РїРѕР·РёС†РёСЏ - СЌС‚Рѕ РїРѕР·РёС†РёСЏ Р·Р°РєСЂС‹РІР°СЋС‰РµР№
-// СЃРєРѕР±РєРё '>', Р° РЅРµ РїРѕР·РёС†РёСЏ Р·Р°РІРµСЂС€Р°СЋС‰РµРіРѕ С‚СЌРіР° "</tag>"
-// Р§С‚РѕР±С‹ РїРѕР»СѓС‡РёС‚СЊ С‚РµР»Рѕ РјРµР¶РґСѓ РѕС‚РєСЂС‹РІР°СЋС‰РёРј Рё Р·Р°РєСЂС‹РІР°СЋС‰РёРј С‚СЌРіРѕРј
-// РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С„СѓРЅРєС†РёРё: getTagBody, getSpcBody
 
-// С‚СЂРµС‚РёР№ РїР°СЂР°РјРµС‚СЂ РґРѕР±Р°РІР»СЏРµС‚ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РЅР°С‡РёРЅР°С‚СЊ РЅРµ СЃ РЅР°С‡Р°Р»Р° РґРѕРєСѓРјРµРЅС‚Р°,
-// Р° СЃ СѓРєР°Р·Р°РЅРЅРѕР№ РїРѕР·РёС†РёРё
 
-    vector <pair <long long int, long long int> > srhSpcTag(string tag, string attr, long long int srtPos)
+// search for tags with specified attribute - возвращает массив начальных
+// и конечных позиций тэгов, подходящих условию
+//( конечная позиция - это позиция закрывающей
+// скобки '>', а не позиция завершающего тэга "</tag>"
+// Чтобы получить тело между открывающим и закрывающим тэгом
+// используется функции: getTagBody, getSpcBody
+
+// третий параметр добавляет возможность начинать не с начала документа,
+// а с указанной позиции
+
+vector <pair <long long int, long long int> > srhSpcTag(string tag, string attr, long long int srtPos)
     {
-// СЃР»РёРІР°РµРј РґРІРµ СЃС‚СЂРѕРєРё РґР»СЏ Р°Р»РіРѕСЂРёС‚РјР° РєРјРї
+// сливаем две строки для алгоритма кмп
 
-        vector <pair <long long int, long long int> > positions;
+vector <pair <long long int, long long int> > positions;
 
-        if(!(html -> length()))
-        {
-            cout<<"Sorry, empty string, function terminates" << endl;
-            return positions;
-        }
-
-
-        string s = "<" + tag + "@";
-
-        char *c = &((*html)[srtPos]);
-
-        long long int *m, d = s.length(), l = html -> length() - srtPos + d, p = d-1;
+if(!(html -> length()))
+{
+cout<<"Sorry, empty string, function terminates";
+return positions;
+}
 
 
+string s = "<" + tag + "@";
 
-        string tAttr, tValue;
+char *c = &((*html)[srtPos]);
 
-        int pos=0, g = attr.length();
-
-        for(int i=0; i<g; i++)
-        {
-            if(attr[i]=='='){
-                pos=i+1;
-                break;
-            }
-            else tAttr+=attr[i];
-        }
-        for(int i=pos; i<g; i++) tValue +=attr[i];
-
-        m = new long long int [l];
-        for(long long int i=0; i<d; i++) m[i]=0;
-
-        for(long long int i = d; i < l ; i++){
-
-            char k = c[i-d];
-            s += k;
-
-            long long int j = m[i-1];
-            while(j>0 && k!=s[j]) j  = m[j];
-            if(k==s[j]) j++;
-            m[i]=j;
-
-            if(j==p)
-            {
-                long long int begPos =srtPos + i - 2*p, endPos = getTagEnd(begPos);
-
-                string fValue = attrSearch(tAttr,begPos,endPos);
-
-                long long int flag = srhAttrPos(&tValue,&fValue);
-
-                if(flag != -1) positions.push_back( make_pair(begPos,endPos) );
-
-            }
+long long int *m, d = s.length(), l = html -> length() - srtPos + d, p = d-1;
 
 
-        }
-        delete m;
-        return positions;
-    }
 
+    string tAttr, tValue;
 
-    vector <pair <long long int, long long int> > srhSpcTag(string tag, string attr)
+    int pos=0, g = attr.length();
+
+    for(int i=0; i<g; i++)
     {
-        return srhSpcTag(tag, attr, 0);
+    if(attr[i]=='='){
+                    pos=i+1;
+                    break;
+                    }
+    else tAttr+=attr[i];
+    }
+    for(int i=pos; i<g; i++) tValue +=attr[i];
+
+m = new long long int [l];
+for(long long int i=0; i<d; i++) m[i]=0;
+
+for(long long int i = d; i < l ; i++){
+
+char k = c[i-d];
+s += k;
+
+long long int j = m[i-1];
+while(j>0 && k!=s[j]) j  = m[j];
+if(k==s[j]) j++;
+m[i]=j;
+
+    if(j==p)
+    {
+    long long int begPos =srtPos + i - 2*p, endPos = getTagEnd(begPos);
+
+    string fValue = attrSearch(tAttr,begPos,endPos);
+
+    long long int flag = srhAttrPos(&tValue,&fValue);
+
+    if(flag != -1) positions.push_back( make_pair(begPos,endPos) );
+
     }
 
 
+}
+delete m;
+return positions;
+}
+
+
+vector <pair <long long int, long long int> > srhSpcTag(string tag, string attr)
+{
+return srhSpcTag(tag, attr, 0);
+}
 
 
 
-    // РІРѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РІС…РѕР¶РґРµРЅРёСЏ Р°С‚С‚СЂРёР±СѓС‚Р°(РѕРґРЅРѕРіРѕ !), РїСЂРё СЌС‚РѕРј РѕСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ, РІСЃС‚СЂРµС‡Р°СЏ
-    // РєРѕРЅРµС† С‚СЌРіР° '>' РІ РёСЃС…РѕРґРЅРѕР№ СЃС‚СЂРѕРєРµ
+
+
+    // возвращает индекс вхождения аттрибута(одного !), при этом останавливается, встречая
+    // конец тэга '>' в исходной строке
     long long int srhAttrPos(string *a, long long int begPos, long long int endPos){
-        string s = *a + "@";
+    string s = *a + "@";
 
-        char *c = &((*html)[begPos]);
+    char *c = &((*html)[begPos]);
 
-        long long int *m,
-                p = a -> length(),
-                d = p+1,
-                l = endPos - begPos + d;
+    long long int *m,
+    p = a -> length(),
+    d = p+1,
+    l = endPos - begPos + d;
 
 
-        long long int srtPosition = -1;
-        m = new long long int [l];
+    long long int srtPosition = -1;
+    m = new long long int [l];
 
-        for(long long int i=0; i<d; i++) m[i]=0;
+    for(long long int i=0; i<d; i++) m[i]=0;
 
-        for(long long int i = d; i < l ; i++){
+    for(long long int i = d; i < l ; i++){
 
-            char k = c[i-d];
-            s+=k;
+    char k = c[i-d];
+    s+=k;
 
-            if(k=='>') break;
-            long long int j = m[i-1];
-            while(j>0 && k!=s[j]) j  = m[j];
-            if(k==s[j]) j++;
-            m[i]=j;
-            if(j==p){
-                srtPosition = begPos + i-2*p;
-                break;
+    if(k=='>') break;
+    long long int j = m[i-1];
+    while(j>0 && k!=s[j]) j  = m[j];
+    if(k==s[j]) j++;
+    m[i]=j;
+    if(j==p){
+            srtPosition = begPos + i-2*p;
+            break;
             }
-        }
-        delete m;
-        return srtPosition;
+    }
+    delete m;
+    return srtPosition;
     }
 
-    // РІРѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ РІС…РѕР¶РґРµРЅРёСЏ Р°С‚С‚СЂРёР±СѓС‚Р°(РѕРґРЅРѕРіРѕ !), РїСЂРё СЌС‚РѕРј РѕСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ, РІСЃС‚СЂРµС‡Р°СЏ
-    // РєРѕРЅРµС† С‚СЌРіР° '>' РІ СЃС‚СЂРѕРєРµ, РЅР° РєРѕС‚РѕСЂСѓСЋ СѓРєР°Р·С‹РІР°РµС‚ РїР°СЂР°РјРµС‚СЂ-СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂРѕРєСѓ 'b'
+    // возвращает индекс вхождения аттрибута(одного !), при этом останавливается, встречая
+    // конец тэга '>' в строке, на которую указывает параметр-указатель на строку 'b'
 
     long long int srhAttrPos(string *a, string *b){
 
@@ -205,135 +205,133 @@ public:
 
 
 
-    // РёС‰РµС‚  РєРѕРЅРµС† С‚Р°РіР°, Р·Р°С‚РµРј РєРѕРїРёСЂСѓРµС‚  СЃР°РјРѕ С‚РµР»Рѕ С‚Р°РіР° РІ СЃС‚СЂРѕРєСѓ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РµРіРѕ
-    // РїР°СЂР°РјРµС‚СЂ 1 - РїРѕР·РёС†РёСЏ РІС…РѕР¶РґРµРЅРёСЏ РЅР°С‡Р°Р»Р° С‚Р°РіР° РІ РѕСЃРЅРѕРІРЅСѓСЋ СЃС‚СЂРѕРєСѓ
-    // РїР°СЂР°РјРµС‚СЂ 2 - СЃР°Рј С‚Р°Рі Р±РµР· РєР°РІС‹С‡РµРє(!)
+    // ищет  конец тага, затем копирует  само тело тага в строку и возвращает его
+    // параметр 1 - позиция вхождения начала тага в основную строку
+    // параметр 2 - сам таг без кавычек(!)
     string getTagBody(long long int tagPos, string tag)
     {
-        string tagStr;
-        string endTag = "</" + tag;
-        string srtTag = "<" + tag;
-        long long int b = html -> length(),
-                c = endTag.length(),
-                d = srtTag.length(),
-                tagEndPos = b,
-                depth = 0;
-        ;
-        int fl, ag;
-        for(long long int i = tagPos;; i++){
-            int fl = 1;
-            for(int j = 0; j<c; j++)
-                if((*html)[i+j]!=endTag[j])
-                {
-                    fl = 0;
-                    break;
-                }
-            if(fl) depth--;
-            if(fl && !depth)
+    string tagStr;
+    string endTag = "</" + tag;
+    string srtTag = "<" + tag;
+    long long int b = html -> length(),
+    c = endTag.length(),
+    d = srtTag.length(),
+    tagEndPos = b,
+    depth = 0;
+    ;
+    int fl, ag;
+    for(long long int i = tagPos;; i++){
+    int fl = 1;
+        for(int j = 0; j<c; j++)
+        if((*html)[i+j]!=endTag[j])
             {
-                tagEndPos = i;
-
-                break;
+                 fl = 0;
+                 break;
             }
-            else
-            {
-                int ag = 1;
-                for(int j = 0; j<d; j++)
-                    if((*html)[i+j]!=srtTag[j])
-                    {
-                        ag = 0;
-                        break;
-                    }
-                if(ag) depth++;
-
-            }
-        }
-        depth = 0;
-        long long int srtTagEnd = tagPos;
-        for(;;srtTagEnd++)
+    if(fl) depth--;
+    if(fl && !depth)
         {
-            char sym = (*html)[srtTagEnd];
-            if(sym=='<') depth++;
-            else if(sym=='>') depth--;
+        tagEndPos = i;
 
-            if(!depth) break;
+        break;
         }
+    else
+        {
+        int ag = 1;
+        for(int j = 0; j<d; j++)
+        if((*html)[i+j]!=srtTag[j])
+            {
+                 ag = 0;
+                 break;
+            }
+        if(ag) depth++;
 
-        for(long long int i = srtTagEnd+1; i<tagEndPos; i++) tagStr+=(*html)[i];
-        return tagStr;
+        }
+    }
+    depth = 0;
+    long long int srtTagEnd = tagPos;
+    for(;;srtTagEnd++)
+    {
+    char sym = (*html)[srtTagEnd];
+    if(sym=='<') depth++;
+    else if(sym=='>') depth--;
+
+    if(!depth) break;
+    }
+
+    for(long long int i = srtTagEnd+1; i<tagEndPos; i++) tagStr+=(*html)[i];
+    return tagStr;
     }
 
 
     long long int getTagEnd(long long int tagPos)
     {
 
-        char *c = &((*html)[tagPos]);
+    char *c = &((*html)[tagPos]);
 
-        long long int depth = 0;
-        long long int i;
+    long long int depth = 0;
+    long long int i;
 
-        for(i=0;;i++){
+    for(i=0;;i++){
 
-            if(c[i]=='<') depth++;
-            else if(c[i]=='>') depth--;
+    if(c[i]=='<') depth++;
+    else if(c[i]=='>') depth--;
 
 
 
-            if(!depth) return i+tagPos;
-        }
+    if(!depth) return i+tagPos;
+    }
 
 
 
 
     }
-    // РёС‰РµС‚ Р°С‚С‚СЂРёР±СѓС‚
+    // ищет аттрибут
     string attrSearch(string attr, long long int begPos, long long int endPos){
 
-        long long int srtPos = srhAttrPos(&attr,begPos,endPos);
+    long long int srtPos = srhAttrPos(&attr,begPos,endPos);
 
-        if(srtPos==-1) return "";
+    if(srtPos==-1) return "";
 
-        string attrVal;
-        long long int k = srtPos + attr.length()+2;
-        char *c  = &((*html)[k]);
-        for(long long  i = 0;;i++)
-        {
-            if(c[i]=='\"')  break;
-            attrVal+=c[i];
-        }
-
-        return attrVal;
+    string attrVal;
+    long long int k = srtPos + attr.length()+2;
+    char *c  = &((*html)[k]);
+    for(long long  i = 0;;i++)
+    {
+    if(c[i]=='\"')  break;
+    attrVal+=c[i];
     }
 
-    // РёС‰РµС‚ РїРѕРґС…РѕРґСЏС‰РёРµ РїРѕ С‚СЂРµР±РѕРІР°РЅРёСЏРј С‚СЌРіРё Рё Р·Р°РїРѕР»РЅСЏРµС‚ РјР°СЃСЃРёРІ СЃС‚СЂРѕРє
-    // С‡РµСЂРµР· СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РЅРµРіРѕ, РїРµСЂРµРґР°РЅРЅС‹Р№ С„СѓРЅРєС†РёРё.
+    return attrVal;
+    }
+
+    // ищет подходящие по требованиям тэги и заполняет массив строк
+    // через указатель на него, переданный функции.
 
     void getSpcBody(string tag, string attr, vector<string> *ftr, long long int srtPos){
 
-        vector < pair< long long int, long long int> >
-                t = srhSpcTag(tag,attr,srtPos);
+    vector < pair< long long int, long long int> >
+    t = srhSpcTag(tag,attr,srtPos);
 
-        for(int i=0; i<t.size(); i++)
-            ftr -> push_back(getTagBody(t[i].first,tag));
+    for(int i=0; i<t.size(); i++)
+    ftr -> push_back(getTagBody(t[i].first,tag));
 
     }
 
 
     void getSpcBody(string tag, string attr, vector<string> *ftr)
     {
-        getSpcBody(tag,attr,ftr,0);
-    }
-
-    unsigned long getPageLength(){
-        return html->length();
+    getSpcBody(tag,attr,ftr,0);
     }
 
 
 
 
     virtual ~stringParse(){
-        //destructor
-        //cout<<"dest string ";
+    //destructor
+    //cout<<"dest string ";
     }
 };
 #endif // STRINGPARSE_H_INCLUDED
+
+
